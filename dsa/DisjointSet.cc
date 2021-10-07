@@ -1,53 +1,58 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
-// Disjoint Set Union or Union Find
-class DisjointSet {
-    int n, *parent, *size;
+// https://cp-algorithms.com/data_structures/disjoint_set_union.html
+// https://www.cs.usfca.edu/~galles/visualization/DisjointSets.html
+// https://usaco.guide/gold/dsu?lang=cpp
+struct DSU {
+    vector<int> arr;
 
-public:
-    explicit DisjointSet(int n) : n{n} {
-        parent = new int[n];
-        size = new int[n];
-        for (int i = 0; i < n; ++i) {
-            parent[i] = i;
-            size[i] = 1;
-        }
+    // 0-based indexing
+    DSU(int n) {
+        arr = vector<int>(n, -1);
     }
 
-    int findSet(int x) {
-        if (x == parent[x])
+    int get(int x) {
+        if (arr[x] < 0)
             return x;
-
-        return parent[x] = findSet(parent[x]);
+        return arr[x] = get(arr[x]);  // path compression
     }
 
-    void unionSets(int x, int y) {
-        x = findSet(x);
-        y = findSet(y);
+    bool unite(int x, int y) {
+        x = get(x), y = get(y);
+        if (x == y)
+            return false;
 
-        if (x != y) {
-            if (size[x] < size[y])
-                swap(x, y);
-            parent[y] = x;
-            size[x] += size[y];
-        }
+        if (arr[x] > arr[y])  // union by size
+            swap(x, y);
+        arr[x] += arr[y];
+        arr[y] = x;
+        return true;
     }
 
-    ~DisjointSet() {
-        delete[] parent;
-        delete[] size;
+    bool isSameSet(int x, int y) {
+        return get(x) == get(y);
+    }
+
+    int size(int x) {
+        return -arr[get(x)];
     }
 };
 
-int main() {
-    DisjointSet dsu = DisjointSet(5);
+int32_t main() {
+    DSU dsu = DSU(6);
 
-    cout << dsu.findSet(2) << endl;
+    cout << dsu.get(2) << endl;
+    cout << dsu.get(1) << endl;
 
-    dsu.unionSets(4, 3);
-    dsu.unionSets(4, 2);
+    cout << dsu.unite(1, 3) << endl;
+    cout << dsu.unite(1, 2) << endl;
+    cout << dsu.unite(1, 4) << endl;
+    cout << dsu.unite(1, 4) << endl;
+    cout << dsu.unite(0, 5) << endl;
 
-    cout << dsu.findSet(2) << endl;
+
+    cout << dsu.size(1) << endl;
+    cout << dsu.size(4) << endl;
+    cout << dsu.size(0) << endl;
 }
