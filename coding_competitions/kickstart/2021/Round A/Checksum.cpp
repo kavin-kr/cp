@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
 class DSU {
@@ -20,7 +19,7 @@ public:
     }
 
     // return false if already linked otherwise return true
-    bool link(int x, int y) {
+    bool unite(int x, int y) {
         x = find(x);
         y = find(y);
         if (x != y) {
@@ -56,12 +55,11 @@ void testCase() {
     std::sort(edges.begin(), edges.end(), greater<>());
 
     long long ans = 0;
-    DSU dsu = DSU(n * n);
-    for (auto x: edges) {
-        int cost = get<0>(x), i = get<1>(x), j = get<2>(x);
-        if (!dsu.link(i, j + n))
+    DSU dsu = DSU(2 * n);
+    for (auto[cost, i, j]: edges)
+        if (!dsu.unite(i, j + n))
             ans += cost;
-    }
+
     cout << ans;
 }
 
